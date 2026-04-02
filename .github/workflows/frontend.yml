@@ -1,30 +1,40 @@
-name: Frontend CI (Dev)
+name: MERN CI (Dev - Single Pipeline)
 
 on:
   push:
     branches: [dev]
-  pull_request:
-    branches: [dev]
 
 jobs:
-  frontend:
+  build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: client
-
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      # Step 2: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install dependencies
+      # Step 3: Install Backend (root)
+      - name: Install backend dependencies
         run: npm install
 
-      - name: Build app
+      # Step 4: Build Backend (if exists)
+      - name: Build backend
         run: npm run build --if-present
+
+      # Step 5: Install Frontend
+      - name: Install frontend dependencies
+        run: |
+          cd client
+          npm install
+
+      # Step 6: Build Frontend
+      - name: Build frontend
+        run: |
+          cd client
+          npm run build --if-present
