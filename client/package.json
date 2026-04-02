@@ -3,6 +3,7 @@
   "proxy": "http://localhost:8080",
   "version": "0.1.0",
   "private": true,
+
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -25,18 +26,25 @@
     "socket.io-client": "^4.0.1",
     "web-vitals": "^1.1.1"
   },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+
+  "engines": {
+    "node": "18.x"
+  },
+
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
   },
+
   "browserslist": {
     "production": [
       ">0.2%",
