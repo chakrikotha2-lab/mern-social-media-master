@@ -1,0 +1,34 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'server.js'
+      - 'controllers/**'
+      - 'models/**'
+      - 'routes/**'
+      - 'middleware/**'
+      - 'config/**'
+      - 'package.json'
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - uses: actions/checkout@v3
+
+      # Setup Node
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Install backend dependencies
+      - name: Install backend
+        run: npm install
+
+      # Optional: Run backend file
+      - name: Run backend
+        run: node server.js || echo "skip run"
