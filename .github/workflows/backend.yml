@@ -1,34 +1,36 @@
-name: Backend CI
+name: Docker CI/CD Pipeline
 
 on:
   push:
-    branches: [dev]
-    paths:
-      - 'server.js'
-      - 'controllers/**'
-      - 'models/**'
-      - 'routes/**'
-      - 'middleware/**'
-      - 'config/**'
-      - 'package.json'
+    branches:
+      - dev  # Trigger pipeline on pushes to the 'dev' branch
 
 jobs:
-  backend:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
-      - uses: actions/checkout@v3
+      # Step 1: Checkout the code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      # Setup Node
-      - uses: actions/setup-node@v3
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      # Step 3: Log in to Docker Hub using your Docker credentials
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
         with:
-          node-version: 18
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Install backend dependencies
-      - name: Install backend
-        run: npm install
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t chakri/my-app:${{ github.sha }} .
 
-      # Optional: Run backend file
-      - name: Run backend
-        run: node server.js || echo "skip run"
+      # Step 5: Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push chakri/my-app:${{ github.sha }}
