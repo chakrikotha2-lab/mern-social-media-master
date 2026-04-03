@@ -1,63 +1,29 @@
-name: CI/CD Pipeline for Dockerized Backend
+name: Docker CI/CD
 
 on:
   push:
-    branches:
-      - main  # Trigger the workflow on push to the 'main' branch
-  pull_request:
-    branches:
-      - main  # Trigger the workflow for pull requests to the 'main' branch
+    branches: 
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Runs the job on the latest Ubuntu machine
+    runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout code from the repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # Step 2: Set up Docker Buildx (optional but recommended for advanced Docker builds)
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
-      # Step 3: Cache Docker layers to speed up the build process (updated to use v3 of actions/cache)
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/docker
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      # Step 4: Ensure Dockerfile exists and build the Docker image using the Dockerfile
-      - name: Check Dockerfile existence
-        run: |
-          if [ ! -f Dockerfile ]; then echo "Dockerfile not found!" && exit 1; fi
-
-      - name: Build Docker image
-        run: |
-          IMAGE_TAG="chakri/training-service:${{ github.sha }}"  # Tag with commit SHA for unique versioning
-          docker build -t $IMAGE_TAG .  # Build image in the current directory
-
-      # Step 5: Run tests inside the Docker container (optional, replace with your test command if necessary)
-      - name: Run tests (Optional)
-        run: |
-          docker run --rm chakri/training-service:${{ github.sha }} npm test
-
-      # Step 6: Log in to Docker Hub using the stored GitHub secrets
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}  # GitHub secret for Docker username
-          password: ${{ secrets.DOCKER_PASSWORD }}  # GitHub secret for Docker password
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 7: Push the Docker image to Docker Hub
-      - name: Push Docker image to Docker Hub
+      - name: Build & Push Docker image
         run: |
           IMAGE_TAG="chakri/training-service:${{ github.sha }}"
-          docker push $IMAGE_TAG  # Push the built image to Docker Hub
-
-      # Step 8: (Optional) Deploy Docker container to a server or cloud platform (e.g., AWS, Kubernetes, etc.)
-      - name: Deploy Docker container (Optional)
-        run: |
-          echo "Deploy your Docker container here using your preferred deployment method."
+          docker build -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
