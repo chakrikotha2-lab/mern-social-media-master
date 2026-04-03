@@ -3,16 +3,16 @@ name: CI/CD Pipeline for Dockerized Backend
 on:
   push:
     branches:
-      - main  # Triggers the workflow on push to the 'main' branch
+      - main  # Trigger the workflow on push to the 'main' branch
   pull_request:
     branches:
-      - main  # Triggers the workflow for pull requests to the 'main' branch
+      - main  # Trigger the workflow for pull requests to the 'main' branch
 
 jobs:
   build:
     runs-on: ubuntu-latest  # Runs the job on the latest Ubuntu machine
     steps:
-      # Step 1: Checkout code from your repository
+      # Step 1: Checkout code from the repository
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -29,11 +29,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-
 
-      # Step 4: Build the Docker image using the Dockerfile
+      # Step 4: Ensure Dockerfile exists and build the Docker image using the Dockerfile
+      - name: Check Dockerfile existence
+        run: |
+          if [ ! -f Dockerfile ]; then echo "Dockerfile not found!" && exit 1; fi
+
       - name: Build Docker image
         run: |
           IMAGE_TAG="chakri/training-service:${{ github.sha }}"  # Tag with commit SHA for unique versioning
-          docker build -t $IMAGE_TAG .
+          docker build -t $IMAGE_TAG .  # Build image in the current directory
 
       # Step 5: Run tests inside the Docker container (optional, replace with your test command if necessary)
       - name: Run tests (Optional)
