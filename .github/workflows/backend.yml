@@ -20,9 +20,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      # Step 3: Cache Docker layers to speed up the build process (optional)
+      # Step 3: Cache Docker layers to speed up the build process (updated to use v3 of actions/cache)
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/docker
           key: ${{ runner.os }}-docker-${{ github.sha }}
