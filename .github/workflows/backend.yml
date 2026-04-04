@@ -3,34 +3,28 @@ name: Docker CI/CD Pipeline
 on:
   push:
     branches:
-      - dev  # Trigger pipeline on pushes to the 'dev' branch
+      - dev
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from GitHub
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # Step 2: Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      # Step 3: Log in to Docker Hub using your Docker credentials
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
+          # This pulls '90145' from your Secrets
           username: ${{ secrets.DOCKER_USERNAME }}
+          # This pulls your Access Token from your Secrets 
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Step 4: Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t chakri/my-app:${{ github.sha }} .
-
-      # Step 5: Push Docker image to Docker Hub
-      - name: Push Docker image
-        run: |
-          docker push chakri/my-app:${{ github.sha }}
+      - name: Build and Push to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # FIXED: Using your exact username '90145' and repo 'backend-app'
+          tags: 90145/backend-app:latest
