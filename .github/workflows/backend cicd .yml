@@ -1,14 +1,15 @@
-name: Docker CI/CD Pipeline
+name: Backend CI/CD
 
 on:
   push:
     branches:
       - dev
+    paths:
+      - 'server/**'   # <--- Only runs for backend changes
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -16,15 +17,12 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          # This pulls '90145' from your Secrets
           username: ${{ secrets.DOCKER_USERNAME }}
-          # This pulls your Access Token from your Secrets 
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push to Docker Hub
+      - name: Build and Push Backend
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./server   # <--- Builds from the server folder
           push: true
-          # FIXED: Using your exact username '90145' and repo 'backend-app'
           tags: 90145/backend-app:latest
