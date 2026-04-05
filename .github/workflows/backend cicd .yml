@@ -16,12 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Show files (debug step)
-      - name: Show project files
+      # 2. Debug: Show all files
+      - name: Show project structure
         run: ls -R
 
       # 3. Login to Docker Hub
-      - name: Login to Docker Hub
+      - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
@@ -31,7 +31,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ./server
-          file: ./server/Dockerfile
+          context: .
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
