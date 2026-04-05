@@ -1,0 +1,44 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2️⃣ Debug project structure (VERY IMPORTANT)
+      - name: Show project structure
+        run: ls -R
+
+      # 3️⃣ Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # 4️⃣ Install dependencies
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm install
+
+      # 5️⃣ Build project
+      - name: Build frontend
+        working-directory: ./client
+        run: npm run build
+
+      # 6️⃣ (Optional) Upload build artifact
+      - name: Upload build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: client/build
